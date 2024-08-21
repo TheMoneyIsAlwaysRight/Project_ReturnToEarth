@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Ground
+  - Bonus
+  - Projectile
+  - Enemy
+  - Note
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - ChapterUI
+  - Background
+  - Player
+  - Planet
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - Wall
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: PuzzleBackGround
+    uniqueID: 2011992781
+    locked: 0
+  - name: Puzzle
+    uniqueID: 373533249
+    locked: 0
+  - name: Object
+    uniqueID: 3162996779
+    locked: 0
+  - name: UI
+    uniqueID: 3927819637
+    locked: 0
