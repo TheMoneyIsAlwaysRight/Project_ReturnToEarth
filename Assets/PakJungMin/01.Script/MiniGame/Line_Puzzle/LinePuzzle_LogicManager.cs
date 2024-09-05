@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+using System.Collections.Generic;
 //각 정점을 서로 이은 뒤, 찌끄러뜨린 형태 --> 사실상 n각형 도형 문제.
 
 //선을 생성하고 Line List에 추가하는 기능.
@@ -18,7 +16,7 @@ public class LinePuzzle_LogicManager : MonoBehaviour
     [SerializeField] Canvas ui_PuzzleCanvas;  //모든 퍼즐의 상위 오브젝트인 동시에 캔버스
     [SerializeField] Canvas in_PuzzleCanvas;  //각각 퍼즐 안에서 실제 퍼즐 역할을 하는 캔버스.
     [SerializeField] Line_Puzzle puzzle;     //각각 퍼즐들의 기반 클래스.
-    [SerializeField] GameObject line_Prefab;    
+    [SerializeField] GameObject line_Prefab;
     [SerializeField] GameObject LineSet;     //생성된 Line Object들을 모아놓는 집합 역할의 부모 Object
     [SerializeField] GameObject gizmo;
     float minDistance = 0.001f;
@@ -42,9 +40,9 @@ public class LinePuzzle_LogicManager : MonoBehaviour
     */
     public void CheckAnswer()
     {
-        if (gizmoList.Count > 0) 
+        if (gizmoList.Count > 0)
         {
-            for(int x=0;x<gizmoList.Count;x++)
+            for (int x = 0; x < gizmoList.Count; x++)
             {
                 Destroy(gizmoList[x].gameObject);
             }
@@ -52,63 +50,67 @@ public class LinePuzzle_LogicManager : MonoBehaviour
         }
 
         {
-            LinePuzzle_Line[] lineArray = LineSet.GetComponentsInChildren<LinePuzzle_Line>();
-            for (int x = 0; x < lineArray.Length; x++)
+            LinePuzzle_Line[] lines = LineSet.GetComponentsInChildren<LinePuzzle_Line>();
+            for (int x = 0; x < lines.Length; x++)
             {
-                for (int y = 0; y < lineArray.Length; y++)
+                for (int y = 0; y < lines.Length; y++)
                 {
                     //평행한 경우 제외
                     if (x == y) { continue; }
 
-                    float now_Line_Slope; //이 직선의 기울기
-                    float check_Line_Slope; //현 직선과 교차할 다른 직선의 기울기
+                    float curSlope; //이 직선의 기울기
+                    float compare_Slope; //검사할 다른 직선의 기울기
 
-                    float now_Line_Intercept; //직선의 y절편
-                    float check_line_intercept;//직선의 y절편
-                    float resultX, resultY;
+           
+                    float curIntercept; //직선의 y절편
+                    float compare_Intercept;//직선의 y절편
+                    float resultX, resultY; //교차점의 좌표
 
-                    //각각 직선의 기울기 구하기
-                    now_Line_Slope = (lineArray[x].startPosY - lineArray[x].endPosY) / (lineArray[x].startPosX - lineArray[x].endPosX);
-                    check_Line_Slope = (lineArray[y].startPosY - lineArray[y].endPosY) / (lineArray[y].startPosX - lineArray[y].endPosX);
+                    //각각 직선의 기울기 구하기 : 각 직선을 이루는 두 점으로부터 기울기 계산.
+                    curSlope = (lines[x].startPosY - lines[x].endPosY) /
+                        (lines[x].startPosX - lines[x].endPosX);
+
+                    compare_Slope = (lines[y].startPosY - lines[y].endPosY) /
+                        (lines[y].startPosX - lines[y].endPosX);
 
 
-                    if (now_Line_Slope == check_Line_Slope) { Debug.Log("두 직선은 평행하다."); continue; }
+                    if (curSlope == compare_Slope) { Debug.Log("두 직선은 평행하다."); continue; }
                     else
                     {
-                        //각각 직선들의 Y절편 구하기
-                        now_Line_Intercept = lineArray[x].endPosY - now_Line_Slope * lineArray[x].endPosX;
-                        check_line_intercept = lineArray[y].endPosY - check_Line_Slope * lineArray[y].endPosX;
+                        //각각 직선들의 Y절편 구하기 : 
+                        curIntercept = lines[x].endPosY - curSlope * lines[x].endPosX;
+                        compare_Intercept = lines[y].endPosY - compare_Slope * lines[y].endPosX;
 
                         //교차점의 좌표
-                        resultX = (check_line_intercept - now_Line_Intercept) / (now_Line_Slope - check_Line_Slope);
-                        resultY = now_Line_Slope * resultX + now_Line_Intercept;
+                        resultX = (compare_Intercept - curIntercept) / (curSlope - compare_Slope);
+                        resultY = curSlope * resultX + curIntercept;
 
                         //각각 선분의 최솟값/최대값 안에 존재하는지 여부 확인.
 
                         //현재 선분과 검사할 다음 선분의 x,y 값의 최소,최대값 안에 점이 있어야 교차점이 존재한다.
 
-                        if ((((resultX > Mathf.Min(lineArray[x].startPosX, lineArray[x].endPosX)+ minDistance 
-                            && resultX < Mathf.Max(lineArray[x].startPosX, lineArray[x].endPosX)- minDistance
+                        if ((((resultX > Mathf.Min(lines[x].startPosX, lines[x].endPosX) + minDistance
+                            && resultX < Mathf.Max(lines[x].startPosX, lines[x].endPosX) - minDistance
 
-                            && (resultX > Mathf.Min(lineArray[y].startPosX, lineArray[y].endPosX)+ minDistance 
-                            && resultX < Mathf.Max(lineArray[y].startPosX, lineArray[y].endPosX)- minDistance)
+                            && (resultX > Mathf.Min(lines[y].startPosX, lines[y].endPosX) + minDistance
+                            && resultX < Mathf.Max(lines[y].startPosX, lines[y].endPosX) - minDistance)
 
 
-                            && (resultY > Mathf.Min(lineArray[x].startPosY, lineArray[x].endPosY)+ minDistance 
-                            && resultY < Mathf.Max(lineArray[x].startPosY, lineArray[x].endPosY)- minDistance
+                            && (resultY > Mathf.Min(lines[x].startPosY, lines[x].endPosY) + minDistance
+                            && resultY < Mathf.Max(lines[x].startPosY, lines[x].endPosY) - minDistance
 
-                            && (resultY > Mathf.Min(lineArray[y].startPosY, lineArray[y].endPosY)+ minDistance 
-                            && resultY < Mathf.Max(lineArray[y].startPosY, lineArray[y].endPosY)- minDistance))))))
+                            && (resultY > Mathf.Min(lines[y].startPosY, lines[y].endPosY) + minDistance
+                            && resultY < Mathf.Max(lines[y].startPosY, lines[y].endPosY) - minDistance))))))
 
                         {
                             Vector3 gizmoDot;
                             //교차점에서 기즈모 역할의 Image 오브젝트 생성.
-                            RectTransformUtility.ScreenPointToWorldPointInRectangle(ui_PuzzleCanvas.GetComponent<RectTransform>(),new Vector2(resultX, resultY),null,out gizmoDot);
-                            GameObject a = Instantiate(gizmo,in_PuzzleCanvas.transform);
+                            RectTransformUtility.ScreenPointToWorldPointInRectangle(ui_PuzzleCanvas.GetComponent<RectTransform>(), new Vector2(resultX, resultY), null, out gizmoDot);
+                            GameObject a = Instantiate(gizmo, in_PuzzleCanvas.transform);
                             a.transform.parent = in_PuzzleCanvas.transform;
                             a.transform.localPosition = gizmoDot;
                             gizmoList.Add(a.transform);
-                        } 
+                        }
                     }
                 }
             }
@@ -157,7 +159,7 @@ public class LinePuzzle_LogicManager : MonoBehaviour
 
         while (dot_list.Count >= visited.Count)
         {
-            
+
             int random = UnityEngine.Random.Range(0, dot_list.Count);
             int index = 0;
             bool canRoot = false;
@@ -255,12 +257,17 @@ public class LinePuzzle_LogicManager : MonoBehaviour
             tailLine.startPosX = dragDot.transform.localPosition.x;
             tailLine.startPosY = dragDot.transform.localPosition.y;
 
+            //점과 다음 점까지의 거리
+            float nextDistance = Vector3.Distance(dragDot.transform.localPosition,
+            dragDot.GetComponent<LinePuzzle_Dot>().tail.transform.localPosition);
+
+
             //드래그 중인 정점의 위치에 따른 다음 선분의 크기,회전값 조정
             RectTransform rect = dragDot.tailLine.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(rect.sizeDelta.x, Vector3.Distance(dragDot.gameObject.transform.localPosition,
-            dragDot.GetComponent<LinePuzzle_Dot>().tail.gameObject.transform.localPosition));
+            rect.sizeDelta = new Vector2(rect.sizeDelta.x, nextDistance);
+
             rect.rotation = Quaternion.FromToRotation(Vector3.up,
-            (dragDot.gameObject.transform.localPosition - dragDot.GetComponent<LinePuzzle_Dot>().tail.gameObject.transform.localPosition).normalized);
+            (dragDot.transform.localPosition - dragDot.GetComponent<LinePuzzle_Dot>().tail.transform.localPosition).normalized);
 
             //드래그 중인 정점의 이전 선분의 위치 <- 드래그 중인 정점의 이전 정점의 로컬 좌표.
             dragDot.headLine.transform.localPosition = dragDot.head.transform.localPosition;
@@ -269,10 +276,13 @@ public class LinePuzzle_LogicManager : MonoBehaviour
             headLine.endPosX = tailLine.startPosX;
             headLine.endPosY = tailLine.startPosY;
 
+            //점과 이전 점까지의 거리
+            float prevDistance = Vector3.Distance(dragDot.transform.localPosition,
+            dragDot.GetComponent<LinePuzzle_Dot>().head.transform.localPosition);
+
             //드래그 중인 정점의 위치에 따른 이전 선분의 크기,회전값 조정
             RectTransform rects = dragDot.headLine.GetComponent<RectTransform>();
-            rects.sizeDelta = new Vector2(rects.sizeDelta.x, Vector3.Distance(dragDot.gameObject.transform.localPosition,
-            dragDot.GetComponent<LinePuzzle_Dot>().head.gameObject.transform.localPosition));
+            rects.sizeDelta = new Vector2(rects.sizeDelta.x,prevDistance);
             rects.rotation = Quaternion.FromToRotation(Vector3.up,
             (dragDot.gameObject.transform.localPosition - dragDot.GetComponent<LinePuzzle_Dot>().head.gameObject.transform.localPosition).normalized);
         }
@@ -289,9 +299,9 @@ public class LinePuzzle_LogicManager : MonoBehaviour
             }
         }
     }
-/***********************************************************************************
-                               Logic Flow
-************************************************************************************/
+    /***********************************************************************************
+                                   Logic Flow
+    ************************************************************************************/
 
     private void Start()
     {
