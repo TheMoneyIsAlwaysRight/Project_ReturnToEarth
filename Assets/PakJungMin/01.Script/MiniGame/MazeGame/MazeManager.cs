@@ -66,7 +66,7 @@ public class MazeManager : MonoBehaviour
     //탐색한 칸들 
     List<Tile> visited;
     //이전 탐색경로를 기록해놓은 Stack
-    Stack<Tile> backTrack; 
+    Stack<Tile> backTrack;
     string nowTile;
 
     /*
@@ -76,14 +76,14 @@ public class MazeManager : MonoBehaviour
     {
         //0. 방문하지 않은 모든 타일 개수만큼 배열 생성.
         backTrack = new Stack<Tile>();
-        visited = new List<Tile>();
         walkableList = new List<Tile>();
 
 
         //1. 이동 가능한 타일들을 walkableList에서 삽입.
-        foreach (KeyValuePair<string, Tile> tile in TileManager.tileManager.tileDir)
+        foreach (KeyValuePair<string, Tile> tile
+            in TileManager.tileManager.tileDir)
         {
-           walkableList.Add(tile.Value);
+            walkableList.Add(tile.Value);
         }
 
         int count = walkableList.Count;
@@ -154,13 +154,7 @@ public class MazeManager : MonoBehaviour
                         upDir = false;
                         continue;
                     }
-                    //그 타일이 이전에 이미 방문했었는지 검사.
-                    if (visited.Contains(TileManager.tileManager.tileDir[$"{nowTile.PosX},{nowTile.PosY + 1}"]))
-                    {
-                        upDir = false;
-                        continue;
-                    }
-                    
+
                     //목표타일을 이동가능한 타일로 판정하고 다음 이동 타일로 지정한다.
                     nextTile = TileManager.tileManager.tileDir[$"{nowTile.PosX},{nowTile.PosY + 1}"];
                     //이동하려는 타일과 현재 타일을 가로막는 벽들을 제거한다.
@@ -187,11 +181,7 @@ public class MazeManager : MonoBehaviour
                         downDir = false;
                         continue;
                     }
-                    if (visited.Contains(TileManager.tileManager.tileDir[$"{nowTile.PosX},{nowTile.PosY - 1}"]))
-                    {
-                        downDir = false;
-                        continue;
-                    }
+
                     nextTile = TileManager.tileManager.tileDir[$"{nowTile.PosX},{nowTile.PosY - 1}"];
                     nextTile.DestroyWall(Tile.WallDir.Up);
                     nowTile.DestroyWall(Tile.WallDir.Down);
@@ -213,11 +203,7 @@ public class MazeManager : MonoBehaviour
                         rightDir = false;
                         continue;
                     }
-                    if (visited.Contains(TileManager.tileManager.tileDir[$"{nowTile.PosX + 1},{nowTile.PosY}"]))
-                    {
-                        rightDir = false;
-                        continue;
-                    }
+
                     nextTile = TileManager.tileManager.tileDir[$"{nowTile.PosX + 1},{nowTile.PosY}"];
                     nextTile.DestroyWall(Tile.WallDir.Left);
                     nowTile.DestroyWall(Tile.WallDir.Right);
@@ -239,12 +225,6 @@ public class MazeManager : MonoBehaviour
                         leftDir = false;
                         continue;
                     }
-                    if (visited.Contains(TileManager.tileManager.tileDir[$"{nowTile.PosX - 1},{nowTile.PosY}"]))
-                    {
-                        leftDir = false;
-                        continue;
-                    }
-
 
                     nextTile = TileManager.tileManager.tileDir[$"{nowTile.PosX - 1},{nowTile.PosY}"];
 
@@ -265,12 +245,8 @@ public class MazeManager : MonoBehaviour
     //Method : 방문한 타일은 Stack과 List에 삽입.
     public void VisitTile(Tile tile)
     {
-        if (!visited.Contains(tile))
-        {
-            backTrack.Push(tile);
-            visited.Add(tile);
-            tile.ChangeWhite();
-        }
+        backTrack.Push(tile);
+        tile.ChangeWhite();
     }
 
 
