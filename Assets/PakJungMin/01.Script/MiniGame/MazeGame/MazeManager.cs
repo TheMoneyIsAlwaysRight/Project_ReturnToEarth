@@ -61,10 +61,12 @@ public class MazeManager : MonoBehaviour
         left,
         Right
     }
-
-    List<Tile> walkableList; //방문하지 않은 타일들
-    List<Tile> visited; //방문했던 타일들
-    Stack<Tile> backTrack; //방문한 타일들을 순차적으로 기록한 스택.
+    //탐색해야할 칸들
+    List<Tile> walkableList;
+    //탐색한 칸들 
+    List<Tile> visited;
+    //이전 탐색경로를 기록해놓은 Stack
+    Stack<Tile> backTrack; 
     string nowTile;
 
     /*
@@ -81,15 +83,18 @@ public class MazeManager : MonoBehaviour
         //1. 이동 가능한 타일들을 walkableList에서 삽입.
         foreach (KeyValuePair<string, Tile> tile in TileManager.tileManager.tileDir)
         {
-            if (!tile.Value.IsWall)
-            {
-                walkableList.Add(tile.Value);
-            }
+           walkableList.Add(tile.Value);
         }
 
-        //2. 랜덤한 타일을 시작 위치로 결정하고 visit,backTrack에 기록한다.
         int count = walkableList.Count;
-        int randomNumber = Random.Range(0, walkableList.Count + 1);
+
+        //2. 랜덤한 타일을 시작 위치로 결정하고 visit,backTrack에 기록한다.
+        int randomNumber = Random.Range(0, walkableList.Count);
+
+
+
+
+
         Tile startTile = TileManager.tileManager.Tiles[randomNumber];
         nowTile = startTile.gameObject.name;
         VisitTile(startTile);
@@ -124,7 +129,7 @@ public class MazeManager : MonoBehaviour
         while (!canMove)
         {
             //0. 현재 위치인 nowTile을 기준으로 무작위 확률로 4방향을 결정한다.
-            MazeDir randomDir = (MazeDir)Random.Range(0, 5);
+            MazeDir randomDir = (MazeDir)Random.Range(0, 4);
 
 
             //만일 4방향이 전부 이동이 불가능하다면 이전 타일로 순차적으로 되돌아가, 길을 다시 찾는다.

@@ -11,13 +11,9 @@ public class Tile : MonoBehaviour
     [SerializeField] GameObject downWall;
     [SerializeField] GameObject leftWall;
     [SerializeField] GameObject rightWall;
-    [SerializeField] bool isWall;
-
 
     int posX;
     int posY;
-
-    public bool IsWall { get { return isWall; } }
 
     public int PosX { get { return posX; } set { posX = value; } }
     public int PosY { get { return posY; } set { posY = value; } }
